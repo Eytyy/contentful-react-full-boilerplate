@@ -1,32 +1,38 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/repo
     docker:
       - image: circleci/node:10.16.0
     steps:
       - checkout
-      - restore_cache: # Restore Cache
+      # Restore Cache
+      - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
+      # Install Node dependencies
       - run:
-          name: Setup Dependencies
+          name: Install local Dependencies
           command: npm install
-      - save_cache: # Cache dependencies
-          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
-          paths:
-            - ./node_modules
-      - run: # Build Project
+      # Build Project
+      - run:
           name: Run Build
           command: |
             npm run build
+             # Cache dependencies
+      # Cache local dependencies
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
       # Cache the build folders for the deploy job
       - save_cache:
           key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - dist
   deploy:
+    working_directory: ~/repo
     docker:
       - image: circleci/python:3.7
-    working_directory: ~/repo
     steps:
       - checkout
       # build folder that needs to be deployed
@@ -73,7 +79,5 @@ workflows:
               only:
                 - master
       - deploy:
-          filters:
-            branches:
-              only:
-                - master
+        requires:
+          - build
