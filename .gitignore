@@ -6,6 +6,8 @@ node_modules
 *.log
 
 .env
+dist
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

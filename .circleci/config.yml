@@ -26,9 +26,9 @@ jobs:
             - ./node_modules
       # Cache the build folders for the deploy job
       - save_cache:
-          key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+          key: build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - dist
+            - build
   deploy:
     working_directory: ~/repo
     docker:
@@ -37,8 +37,8 @@ jobs:
       - checkout
       # build folder that needs to be deployed
       - restore_cache:
-          key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
-      # Add the dist folder in github repo
+          key: build-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+      # Add the build folder in github repo
       - run:
           name: Commit folder
           command: |
@@ -46,7 +46,7 @@ jobs:
             git config --global user.email "e.tayyem@gmail.com"
             git config --global user.name "Eytyy"
             git add .
-            git commit -m "added dist folder from cache for deployment"
+            git commit -m "added build folder from cache for deployment"
       # Install AWS cli
       - run:
           name: Install awscli
