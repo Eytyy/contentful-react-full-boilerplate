@@ -22,7 +22,7 @@ jobs:
       - save_cache:
           key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-              - dist
+            - dist
   deploy:
     docker:
       - image: circleci/python:3.7
@@ -30,8 +30,8 @@ jobs:
     steps:
       - checkout
       # build folder that needs to be deployed
-        - restore_cache:
-            key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
       # Add the dist folder in github repo
       - run:
           name: Commit folder
