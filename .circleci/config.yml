@@ -79,5 +79,5 @@ workflows:
               only:
                 - master
       - deploy:
-        requires:
-          - build
+          requires:
+            - build
