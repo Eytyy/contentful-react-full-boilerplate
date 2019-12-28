@@ -1,0 +1,15 @@
+dist
+
+# OSX
+.DS_Store
+
+# nodejs
+node_modules
+*.log
+
+.env
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.config.yml
+!.elasticbeanstalk/*.global.yml
