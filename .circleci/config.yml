@@ -5,29 +5,48 @@ jobs:
       - image: circleci/node:10.16.0
     steps:
       - checkout
-      - restore_cache: # special step to restore the dependency cache
+      - restore_cache: # Restore Cache
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
       - run:
           name: Setup Dependencies
           command: npm install
-      - run: # run build
-          name: Run Build
-          command: |
-            npm run build
-      - save_cache: # special step to save the dependency cache
+      - save_cache: # Cache dependencies
           key: dependency-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
           paths:
             - ./node_modules
+      - run: # Build Project
+          name: Run Build
+          command: |
+            npm run build
+      # Cache the build folders for the deploy job
+      - save_cache:
+          key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+              - dist
   deploy:
     docker:
       - image: circleci/python:3.7
     working_directory: ~/repo
     steps:
       - checkout
+      # build folder that needs to be deployed
+        - restore_cache:
+            key: dist-{{ .Environment.CIRCLE_BRANCH }}-{{ .Environment.CIRCLE_SHA1 }}
+      # Add the dist folder in github repo
+      - run:
+          name: Commit folder
+          command: |
+            git config credential.helper 'cache --timeout=120'
+            git config --global user.email "e.tayyem@gmail.com"
+            git config --global user.name "Eytyy"
+            git add .
+            git commit -m "added dist folder from cache for deployment"
+      # Install AWS cli
       - run:
           name: Install awscli
           command: |
             sudo pip install awsebcli --upgrade
+      # Create AWS Credentials
       - run:
           name: Create AWS credentials manually
           command: |
@@ -39,7 +58,7 @@ jobs:
             echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/config
             echo "region=us-west-2" >> ~/.aws/config
       - run:
-          name: Deploy to EB if branch is Master
+          name: Deploy to AWS EB
           command: |
             eb use contentful-react-boilerplate-dev --profile eb-cli  
             eb deploy -v --staged --profile eb-cli
