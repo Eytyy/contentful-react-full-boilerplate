@@ -26,12 +26,19 @@ export const GalleryNavigation = styled.div`
 		font-family: ${Vairables.fonts.title};
 		font-size: 62px;
 		color: ${Vairables.colors.blue};
+    visibility: hidden;
   }
   .next_slide {
     text-align: right;
+    &.visible {
+      visibility: visible;
+    }
   }
   .previous_slide {
     text-align: left;
+    &.visible {
+      visibility: visible;
+    }
   }
 `
 

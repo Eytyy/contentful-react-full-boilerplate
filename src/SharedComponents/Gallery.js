@@ -9,6 +9,10 @@ import {
 
 const Gallery = ({ slides }) => {
   const [activeIndex, setActiveIndex] = React.useState(0)
+  const [visibleSlides, updateVisibleSlides] = React.useState([
+    slides[0],
+    slides[1]
+  ])
 
   React.useEffect(() => {
     document.addEventListener('keydown', handleKeyEvent)
@@ -18,11 +22,18 @@ const Gallery = ({ slides }) => {
   }, [])
 
   const nextSlide = () => {
-    setActiveIndex(prevIndex => (prevIndex + 1) % slides.length)
+    if (slides.length > visibleSlides.length) {
+      updateVisibleSlides(prevSlides => {
+        return [...prevSlides, slides[visibleSlides.length]]
+      })
+    }
+    setActiveIndex(prevIndex => (prevIndex + 1) % visibleSlides.length)
   }
 
   const previousSlide = () => {
-    setActiveIndex(prevIndex => (prevIndex - 1 + slides.length) % slides.length)
+    setActiveIndex(
+      prevIndex => (prevIndex - 1 + visibleSlides.length) % visibleSlides.length
+    )
   }
 
   const handleKeyEvent = ({ key }) => {
@@ -40,7 +51,7 @@ const Gallery = ({ slides }) => {
 
   return (
     <GalleryWrapper className="gallery">
-      {slides.map(({ fields, sys }, index) => (
+      {visibleSlides.map(({ fields, sys }, index) => (
         <ImageWrapper
           key={sys.id}
           className={index === activeIndex ? 'active' : 'inactive'}
@@ -49,11 +60,19 @@ const Gallery = ({ slides }) => {
         </ImageWrapper>
       ))}
       <GalleryNavigation className="gallery-nav">
-        <button className="previous_slide" onClick={nextSlide}>
+        <button
+          className={`previous_slide ${activeIndex > 0 ? 'visible' : 'hidden'}`}
+          onClick={previousSlide}
+        >
           {'<'}
         </button>
 
-        <button className="next_slide" onClick={previousSlide}>
+        <button
+          className={`next_slide ${
+            activeIndex < slides.length - 1 ? 'visible' : 'hidden'
+          }`}
+          onClick={nextSlide}
+        >
           {'>'}
         </button>
       </GalleryNavigation>

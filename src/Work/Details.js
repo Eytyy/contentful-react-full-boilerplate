@@ -22,6 +22,7 @@ const Details = ({ match }) => {
   }
 
   const { title, description, media } = content.fields
+  console.log(content.fields)
   return (
     <article>
       <CommonStyles.Header>
