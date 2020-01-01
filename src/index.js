@@ -1,8 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
 
 import App from './App'
 import DefaultErrorBoundry from './DefaultErrorBoundry'
+import GlobalStyles from './Styles/global.styles'
 
 if (process.env.NODE_ENV === 'development') {
   const axe = require('react-axe')
@@ -11,7 +13,10 @@ if (process.env.NODE_ENV === 'development') {
 
 ReactDOM.render(
   <DefaultErrorBoundry>
-    <App />
+    <BrowserRouter>
+      <GlobalStyles />
+      <App />
+    </BrowserRouter>
   </DefaultErrorBoundry>,
   document.getElementById('app')
 )

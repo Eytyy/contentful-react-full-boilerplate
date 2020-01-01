@@ -2,6 +2,13 @@ const express = require('express')
 const route = express.Router()
 const client = require('../contentfulClient')
 
+const getArticle = id =>
+  client.getEntries({
+    include: 3,
+    content_type: 'post',
+    'fields.slug': id
+  })
+
 route.get('/', (req, res) => {
   client
     .getEntries({
@@ -13,14 +20,9 @@ route.get('/', (req, res) => {
 })
 
 route.get('/:id', (req, res) => {
-  client
-    .getEntries({
-      include: 3,
-      content_type: 'post',
-      'fields.slug': req.params.id
-    })
+  getArticle(req.params.id)
     .then(payload => payload.items[0])
     .then(data => res.json(data))
 })
 
-module.exports = route
+module.exports = { route, getArticle }

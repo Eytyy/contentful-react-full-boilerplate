@@ -23,8 +23,11 @@ app.use(
 app.use(webpackHotMiddleware(compiler))
 app.use(express.static(DIST_DIR))
 
-const posts = require('./routes/posts')
-app.use('/api/posts', posts)
+const journal = require('./routes/journal')
+const work = require('./routes/work')
+
+app.use('/api/journal', journal.route)
+app.use('/api/work', work.route)
 
 app.get('*', (_, res) => res.sendFile(HTML_FILE))
 
